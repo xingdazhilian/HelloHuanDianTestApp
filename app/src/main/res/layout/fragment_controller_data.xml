@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:paddingStart="12dp"
+    android:paddingLeft="12dp"
+    android:paddingEnd="12dp"
+    android:paddingRight="12dp"
+    android:paddingBottom="12dp"
+    >
+
+    <com.HelloHuanDian.apps.test.widget.VerticalScrollTextView
+        android:id="@+id/tv_BatteryControllerData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical"
+        android:textColor="@android:color/holo_green_light">
+
+    </com.HelloHuanDian.apps.test.widget.VerticalScrollTextView>
+</FrameLayout>

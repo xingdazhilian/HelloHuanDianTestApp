@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.config["compileSdkVersion"]
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.config["minSdkVersion"]
+        targetSdkVersion rootProject.ext.config["targetSdkVersion"]
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.dependencies["appcompat-v7"]
+
+    implementation rootProject.ext.dependencies["rxjava"]
+    implementation rootProject.ext.dependencies["rxandroid"]
+
+    implementation project(path: ':SerialPort')
+    api project(path: ':SerialDataControllerLibrary')
+    api project(path: ':SerialDataParserLibrary')
+    implementation project(path: ':SerialPortUtilLibrary')
+}

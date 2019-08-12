@@ -1,0 +1,28 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.config["compileSdkVersion"]
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.config["minSdkVersion"]
+        targetSdkVersion rootProject.ext.config["targetSdkVersion"]
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.dependencies["appcompat-v7"]
+
+    api project(path: ':UtilLibrary')
+}

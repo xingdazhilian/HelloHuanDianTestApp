@@ -1,0 +1,2 @@
+include ':app', ':TestLibrary', ':DataLibrary', ':SerialDataParserLibrary', ':UtilLibrary', ':SerialDataControllerLibrary', ':SerialPortUtilLibrary', ':ConfigStrategyLibrary', ':BaseLibrary'//, ':testApp'
+include ':SerialPort'

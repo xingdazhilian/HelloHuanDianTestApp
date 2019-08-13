@@ -23,20 +23,20 @@ public abstract class IgnoreErrorObserver<T> extends AtomicReference<Disposable>
     {
         if (!isDisposed())
         {
-            if (isCatch)
-            {
-                try
-                {
-                    on_Next(t);
-                }
-                catch (Throwable e)
-                {
-                    onError(e);
-                }
-            } else
-            {
+//            if (isCatch)
+//            {
+//                try
+//                {
+//                    on_Next(t);
+//                }
+//                catch (Throwable e)
+//                {
+//                    onError(e);
+//                }
+//            } else
+//            {
                 on_Next(t);
-            }
+//            }
         }
     }
 

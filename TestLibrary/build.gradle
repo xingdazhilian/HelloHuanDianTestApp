@@ -33,7 +33,7 @@ dependencies {
     implementation rootProject.ext.dependencies["rxandroid"]
 
     implementation project(path: ':SerialPort')
-    api project(path: ':SerialDataControllerLibrary')
+    api project(path: ':SerialPortControllerLibrary')
     api project(path: ':SerialDataParserLibrary')
     implementation project(path: ':SerialPortUtilLibrary')
 }

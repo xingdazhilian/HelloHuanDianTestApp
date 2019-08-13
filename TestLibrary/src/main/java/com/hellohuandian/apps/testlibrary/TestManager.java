@@ -2,15 +2,15 @@ package com.hellohuandian.apps.testlibrary;
 
 import com.android.SerialPort.SerialPortConfig;
 import com.android.SerialPort.SerialPortDevice;
-import com.hellohuandian.apps.testlibrary.core.SerialPortDispatcher;
 import com.hellohuandian.apps.testlibrary.core.SerialPortControllerDevice;
+import com.hellohuandian.apps.testlibrary.core.SerialPortDispatcher;
 
 /**
  * Author:      Lee Yeung
  * Create Date: 2019-07-24
  * Description:
  */
-public final class TestManager
+final class TestManager
 {
     private static final TestManager TEST_MANAGER = new TestManager();
 
@@ -21,7 +21,7 @@ public final class TestManager
     {
     }
 
-    public static TestManager getInstance()
+    static TestManager getInstance()
     {
         return TEST_MANAGER;
     }
@@ -41,7 +41,7 @@ public final class TestManager
 
         if (mSerialPortDevice != null)
         {
-            mSerialPortController.init(mSerialPortDevice, serialPortConfig);
+            mSerialPortController.init(mSerialPortDevice);
             try
             {
                 mSerialPortController.start();
@@ -67,7 +67,7 @@ public final class TestManager
         }
     }
 
-    public SerialPortDispatcher getSerialPortController()
+    SerialPortDispatcher getSerialPortDispatcher()
     {
         return mSerialPortController;
     }

@@ -212,4 +212,25 @@ public class BatteryInfo implements Cloneable
     {
         this.batteryComprehensiveInfo = batteryComprehensiveInfo;
     }
+
+    public void reset()
+    {
+        batteryTemperature
+                = batteryTotalVoltage
+                = realTimeCurrent
+                = relativeCapatityPercent
+                = absoluteCapatityPercent
+                = remainingCapatity
+                = fullCapatity
+                = loopCount
+                = batteryVoltage_1_7
+                = batteryVoltage_8_15
+                = soh
+                = batteryIdCode
+                = manufacturer
+                = version
+                = batteryIdCheckCode
+                = batteryComprehensiveInfo
+                = "";
+    }
 }

@@ -20,5 +20,6 @@ public class MainActivity extends AppBaseActivity
 
         ViewModelProviders.of(this).get(BatteryViewModel.class);
         startService(new Intent(this, SerialPortWatchService.class));
+
     }
 }

@@ -3,6 +3,7 @@ package com.HelloHuanDian.apps.test.service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.SparseArray;
 
 import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
@@ -72,7 +73,14 @@ public class SerialPortWatchService extends TestService
                             return formatBatteryInfo;
                         }).subscribe(formatBatteryInfo -> {
                     formatBatteryInfo.format(batteryData);
-                    mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(formatBatteryInfo));
+
+                    if (isMainThread())
+                    {
+                        BatteryWatcherRegisters.onWatch(formatBatteryInfo);
+                    } else
+                    {
+                        mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(formatBatteryInfo));
+                    }
                 });
             }
             catch (Exception e)
@@ -83,11 +91,18 @@ public class SerialPortWatchService extends TestService
     }
 
     @Override
+    public void onIdIndicate(int id)
+    {
+        postString("电池号(" + id + ")\n" +
+                "=========================");
+    }
+
+    @Override
     public void onReadEvent(String event)
     {
         if (isWatch)
         {
-            mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(event));
+            postString(event);
         }
     }
 
@@ -96,7 +111,7 @@ public class SerialPortWatchService extends TestService
     {
         if (isWatch)
         {
-            mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(event));
+            postString(event);
         }
     }
 
@@ -105,7 +120,18 @@ public class SerialPortWatchService extends TestService
     {
         if (isWatch)
         {
-            mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(event));
+            postString(event);
+        }
+    }
+
+    private void postString(String str)
+    {
+        if (isMainThread())
+        {
+            BatteryWatcherRegisters.onWatch(str);
+        } else
+        {
+            mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(str));
         }
     }
 
@@ -154,6 +180,11 @@ public class SerialPortWatchService extends TestService
                 BATTERY_INFO_WATCHERS.remove(batteryInfoWatcher);
             }
         }
+    }
+
+    private boolean isMainThread()
+    {
+        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
     @Override

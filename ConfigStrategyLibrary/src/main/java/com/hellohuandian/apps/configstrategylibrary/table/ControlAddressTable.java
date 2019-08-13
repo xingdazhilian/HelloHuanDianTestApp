@@ -72,9 +72,9 @@ public final class ControlAddressTable
         ADDRESSES.add(new Address(AddressID._1, AddressValue._1, AddressVersion.code_1));
         ADDRESSES.add(new Address(AddressID._2, AddressValue._2, AddressVersion.code_1));
         ADDRESSES.add(new Address(AddressID._3, AddressValue._3, AddressVersion.code_1));
-//        ADDRESSES.add(new Address(AddressID._4, AddressValue._4, AddressVersion.code_1));
-//        ADDRESSES.add(new Address(AddressID._5, AddressValue._5, AddressVersion.code_1));
-//        ADDRESSES.add(new Address(AddressID._6, AddressValue._6, AddressVersion.code_1));
+        ADDRESSES.add(new Address(AddressID._4, AddressValue._4, AddressVersion.code_1));
+        ADDRESSES.add(new Address(AddressID._5, AddressValue._5, AddressVersion.code_1));
+        ADDRESSES.add(new Address(AddressID._6, AddressValue._6, AddressVersion.code_1));
 //        ADDRESSES.add(new Address(AddressID._7, AddressValue._7, AddressVersion.code_1));
 //        ADDRESSES.add(new Address(AddressID._8, AddressValue._8, AddressVersion.code_1));
 //        ADDRESSES.add(new Address(AddressID._9, AddressValue._9, AddressVersion.code_1));

@@ -23,8 +23,6 @@ import butterknife.ButterKnife;
  */
 public class BatteryInfoAdapter extends BaseRecycleAdapter<FormatBatteryInfo, BatteryInfoAdapter.ViewHolder>
 {
-    private final int size = 3;
-
     private final HashMap<Integer, Integer> indexMap = new HashMap<>();
 
     public BatteryInfoAdapter(Context context)
@@ -54,12 +52,6 @@ public class BatteryInfoAdapter extends BaseRecycleAdapter<FormatBatteryInfo, Ba
                 }
             }
         }
-    }
-
-    @Override
-    public int getItemCount()
-    {
-        return size;
     }
 
     @NonNull

@@ -4,15 +4,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.hellohuandian.apps.deviceparserlibrary.base.callBack.SerialDataListener;
-import com.hellohuandian.apps.testlibrary.core.OnRwEventConsumer;
+import com.hellohuandian.apps.testlibrary.core.OnEventConsumer;
+import com.hellohuandian.apps.testlibrary.core.OnWatchResultConsumer;
 
 /**
  * Author:      Lee Yeung
  * Create Date: 2019-07-24
  * Description:
  */
-public abstract class TestService extends Service implements SerialDataListener, OnRwEventConsumer
+public abstract class TestService extends Service implements OnWatchResultConsumer, OnEventConsumer
 {
     @Override
     public IBinder onBind(Intent intent)
@@ -25,10 +25,10 @@ public abstract class TestService extends Service implements SerialDataListener,
     {
         super.onCreate();
 
-        if (TestManager.getInstance().getSerialPortController() != null)
+        if (TestManager.getInstance().getSerialPortDispatcher() != null)
         {
-            TestManager.getInstance().getSerialPortController().setSerialDataListener(this);
-            TestManager.getInstance().getSerialPortController().setOnRwEventConsumer(this);
+            TestManager.getInstance().getSerialPortDispatcher().setOnEventConsumer(this);
+            TestManager.getInstance().getSerialPortDispatcher().setOnWatchResultConsumer(this);
         }
 
         try

@@ -92,7 +92,11 @@ public class VerticalScrollTextView extends AppCompatTextView
 
     public void clear()
     {
-        getEditableText().clear();
+        if (getEditableText() != null)
+        {
+            getEditableText().clear();
+        }
+
         scroller.startScroll(0, 0, 0, 0);
     }
 }

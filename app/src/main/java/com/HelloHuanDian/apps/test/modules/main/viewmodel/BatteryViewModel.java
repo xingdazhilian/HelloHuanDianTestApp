@@ -46,4 +46,5 @@ public class BatteryViewModel extends AndroidViewModel implements BatteryInfoWat
     {
         SerialPortWatchService.BatteryWatcherRegisters.unRegister(BatteryViewModel.this);
     }
+
 }

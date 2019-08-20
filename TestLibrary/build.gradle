@@ -29,11 +29,10 @@ dependencies {
 
     implementation rootProject.ext.dependencies["appcompat-v7"]
 
-    implementation rootProject.ext.dependencies["rxjava"]
-    implementation rootProject.ext.dependencies["rxandroid"]
-
     implementation project(path: ':SerialPort')
-    api project(path: ':SerialPortControllerLibrary')
+//    api project(path: ':SerialPortControllerLibrary')
     api project(path: ':SerialDataParserLibrary')
     implementation project(path: ':SerialPortUtilLibrary')
+    implementation project(path: ':ControllerLibrary')
+    implementation project(path: ':ConfigLibrary')
 }

@@ -4,20 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="20dp"
     >
-
-    <TextView
-        android:id="@+id/tv_Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="哈喽换电-测试程序"
-        android:textColor="@android:color/holo_orange_light"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 
     <fragment
         android:id="@+id/fragment_BatteryMonitor"
@@ -26,7 +14,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_Title"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent=".8"></fragment>
 
     <fragment
@@ -37,6 +25,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/fragment_BatteryMonitor"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_Title"
+        app:layout_constraintTop_toTopOf="parent"
         ></fragment>
 </androidx.constraintlayout.widget.ConstraintLayout>

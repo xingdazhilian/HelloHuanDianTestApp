@@ -1,6 +1,6 @@
 package com.hellohuandian.apps.serialPortControllerLibrary;
 
-import com.android.SerialPort.SerialPortDevice;
+import android_serialport_api.SerialPortDevice;
 import com.hellohuandian.apps.configstrategylibrary.table.ControlAddressTable;
 import com.hellohuandian.apps.serialPortControllerLibrary.base.controller.EventStrategyController;
 import com.hellohuandian.apps.serialPortControllerLibrary.funcController.commonController.CommonController;

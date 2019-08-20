@@ -30,7 +30,7 @@ dependencies {
     implementation rootProject.ext.dependencies["appcompat-v7"]
 
     implementation project(path: ':SerialPort')
-    implementation project(path: ':DataLibrary')
+    implementation project(path: ':SerialPortDataLibrary')
     implementation project(path: ':SerialPortUtilLibrary')
-    implementation project(path: ':ConfigStrategyLibrary')
+    implementation project(path: ':ConfigLibrary')
 }

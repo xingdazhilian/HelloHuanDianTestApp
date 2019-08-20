@@ -29,7 +29,7 @@ dependencies {
 
     implementation rootProject.ext.dependencies["appcompat-v7"]
 
-    api project(path: ':DataLibrary')
+    api project(path: ':SerialPortDataLibrary')
     implementation project(path: ':UtilLibrary')
     implementation project(path: ':SerialPortUtilLibrary')
 }

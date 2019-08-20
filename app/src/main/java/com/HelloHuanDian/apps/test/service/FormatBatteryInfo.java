@@ -11,9 +11,11 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
-import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo;
 
 import androidx.annotation.ColorInt;
+
+import static com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo.FINISH;
 
 /**
  * Author:      Lee Yeung
@@ -25,6 +27,9 @@ public class FormatBatteryInfo
     private BatteryInfo batteryData;
     private final SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
+    private int controllerAddress;
+    private int status = FINISH;
+
     private final int TITLE_COLOR = Color.BLACK;
     private final int EMPTY_DATA_COLOR = Color.RED;
     private final int DATA_COLOR = Color.GREEN;
@@ -34,6 +39,16 @@ public class FormatBatteryInfo
         return batteryData;
     }
 
+    public int getControllerAddress()
+    {
+        return controllerAddress;
+    }
+
+    public int getStatus()
+    {
+        return status;
+    }
+
     public void format(BatteryInfo batteryData)
     {
         this.batteryData = batteryData;
@@ -41,7 +56,11 @@ public class FormatBatteryInfo
 
         if (batteryData != null)
         {
-            addColorSpan(("控制板ID：" + batteryData.getControllerAddressId() + "\n"), TITLE_COLOR, 1.2f, true);
+            this.status = batteryData.getStatus();
+
+            this.controllerAddress = batteryData.getControllerAddress();
+
+            addColorSpan(("控制板ID：" + batteryData.getControllerAddress() + "\n"), TITLE_COLOR, 1.2f, true);
 
             boolean isEmpty = TextUtils.isEmpty(batteryData.getBatteryTemperature());
             String text = isEmpty ? "当前温度：***\n" : "当前温度：" + batteryData.getBatteryTemperature() + "°C\n";

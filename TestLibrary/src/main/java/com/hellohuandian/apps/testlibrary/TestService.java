@@ -4,15 +4,16 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.hellohuandian.apps.testlibrary.core.OnEventConsumer;
-import com.hellohuandian.apps.testlibrary.core.OnWatchResultConsumer;
+import com.hellohuandian.apps.testlibrary.core.TestManager;
+import com.hellohuandian.apps.testlibrary.core.action.RwAction;
+import com.hellohuandian.apps.testlibrary.core.action.WatchAction;
 
 /**
  * Author:      Lee Yeung
  * Create Date: 2019-07-24
  * Description:
  */
-public abstract class TestService extends Service implements OnWatchResultConsumer, OnEventConsumer
+public abstract class TestService extends Service implements RwAction, WatchAction
 {
     @Override
     public IBinder onBind(Intent intent)
@@ -25,11 +26,8 @@ public abstract class TestService extends Service implements OnWatchResultConsum
     {
         super.onCreate();
 
-        if (TestManager.getInstance().getSerialPortDispatcher() != null)
-        {
-            TestManager.getInstance().getSerialPortDispatcher().setOnEventConsumer(this);
-            TestManager.getInstance().getSerialPortDispatcher().setOnWatchResultConsumer(this);
-        }
+        TestManager.getInstance().setRwCallBack(this);
+        TestManager.getInstance().setWatchAction(this);
 
         try
         {

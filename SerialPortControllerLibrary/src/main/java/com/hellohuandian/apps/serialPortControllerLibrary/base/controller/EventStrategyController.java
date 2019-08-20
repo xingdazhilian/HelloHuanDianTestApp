@@ -1,7 +1,7 @@
 package com.hellohuandian.apps.serialPortControllerLibrary.base.controller;
 
-import com.android.SerialPort.SerialPortDevice;
-import com.hellohuandian.apps.datalibrary.models.readSerialData.SerialPortBytes;
+import android_serialport_api.SerialPortDevice;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.SerialPortData;
 import com.hellohuandian.apps.serialPortControllerLibrary.base.controller.strategy.TaskStrategy;
 
 import androidx.core.util.Consumer;
@@ -17,7 +17,7 @@ public abstract class EventStrategyController<T extends TaskStrategy> extends St
     private Consumer<String> writeConsumer;
     private Consumer<String> readConsumer;
 
-    private Consumer<SerialPortBytes> serialPortBytesConsumer;
+    private Consumer<SerialPortData> serialPortBytesConsumer;
 
     public EventStrategyController(SerialPortDevice serialPortDevice, int controllerAddressId)
     {
@@ -48,7 +48,7 @@ public abstract class EventStrategyController<T extends TaskStrategy> extends St
         }
     }
 
-    protected void onReadFinish(SerialPortBytes serialPortBytes)
+    protected void onReadFinish(SerialPortData serialPortBytes)
     {
         if (serialPortBytesConsumer != null)
         {
@@ -71,7 +71,7 @@ public abstract class EventStrategyController<T extends TaskStrategy> extends St
         this.readConsumer = readConsumer;
     }
 
-    public final void registerSerialPortBytesConsumer(Consumer<SerialPortBytes> serialPortBytesConsumer)
+    public final void registerSerialPortBytesConsumer(Consumer<SerialPortData> serialPortBytesConsumer)
     {
         this.serialPortBytesConsumer = serialPortBytesConsumer;
     }

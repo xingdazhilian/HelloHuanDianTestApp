@@ -1,224 +1,216 @@
 package com.hellohuandian.apps.testlibrary.core;
 
-import com.android.SerialPort.SerialPortDevice;
-import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
-import com.hellohuandian.apps.datalibrary.models.readSerialData.SerialPortBytes;
+import com.hellohuandian.apps.ControllerLibrary.StrategyDispatcher;
+import com.hellohuandian.apps.ControllerLibrary.base.strategy.TaskStrategy;
+import com.hellohuandian.apps.ControllerLibrary.base.strategyController.TaskController;
+import com.hellohuandian.apps.ControllerLibrary.base.strategyController.action.TaskAction;
+import com.hellohuandian.apps.ControllerLibrary.strategyController.battery.BatteryController;
+import com.hellohuandian.apps.ControllerLibrary.strategyController.battery.BatteryStrategy;
+import com.hellohuandian.apps.ControllerLibrary.strategyController.cmd.CmdStrategy;
+import com.hellohuandian.apps.ControllerLibrary.strategyController.controlPanel._485Controller;
+import com.hellohuandian.apps.ControllerLibrary.strategyController.controlPanel._485Strategy;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.SerialPortData;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo;
+import com.hellohuandian.apps.configstrategylibrary.BatteryStrategyTable;
+import com.hellohuandian.apps.configstrategylibrary.ControlPanelStrategyTable;
 import com.hellohuandian.apps.deviceparserlibrary.SerialPortParserProvider;
 import com.hellohuandian.apps.deviceparserlibrary.base.BaseSerialDataParser;
 import com.hellohuandian.apps.deviceparserlibrary.version.BatteryVersion;
 import com.hellohuandian.apps.deviceparserlibrary.version.VersionParser;
-import com.hellohuandian.apps.serialPortControllerLibrary.SerialPortControllerProvider;
-import com.hellohuandian.apps.serialPortControllerLibrary.base.controller.EventStrategyController;
-import com.hellohuandian.apps.testlibrary.core.observer.IgnoreErrorObserver;
-import com.hellohuandian.apps.utillibrary.LogTracer;
+import com.hellohuandian.apps.testlibrary.core.action.WatchAction;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import androidx.core.util.Consumer;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import android_serialport_api.SerialPortDevice;
 
 /**
  * Author:      Lee Yeung
- * Create Date: 2019-07-24
+ * Create Date: 2019-08-15
  * Description:
  */
-public final class SerialPortDispatcher
+final class SerialPortDispatcher extends ConcurrentLinkedQueue<CmdStrategy>
 {
-    private static final String TAG = "串口控制器:";
-
     private SerialPortDevice serialPortDevice;
-
-    private final Map<Integer, BatteryInfo> batteryInfoMap = new HashMap<>();
-
-    private OnWatchResultConsumer onWatchResultConsumer;
-    private OnEventConsumer onEventConsumer;
-
-    private final Consumer<Integer> idIndicatorConsumer = new Consumer<Integer>()
-    {
-        @Override
-        public void accept(Integer integer)
-        {
-            if (onEventConsumer != null)
-            {
-                onEventConsumer.onIdIndicate(integer);
-            }
-        }
-    };
-    private final Consumer<String> writeConsumer = new Consumer<String>()
-    {
-        @Override
-        public void accept(String s)
-        {
-            if (onEventConsumer != null)
-            {
-                onEventConsumer.onWriteEvent(s);
-            }
-        }
-    };
-    private final Consumer<String> readConsumer = new Consumer<String>()
-    {
-        @Override
-        public void accept(String s)
-        {
-            if (onEventConsumer != null)
-            {
-                onEventConsumer.onReadEvent(s);
-            }
-        }
-    };
-    private final Consumer<BatteryInfo> watchConsumer = new Consumer<BatteryInfo>()
-    {
-        @Override
-        public void accept(BatteryInfo batteryInfo)
-        {
-            if (onWatchResultConsumer != null)
-            {
-                onWatchResultConsumer.onWatch(batteryInfo);
-            }
-        }
-    };
-    private final Consumer<SerialPortBytes> serialPortBytesConsumer = new Consumer<SerialPortBytes>()
-    {
-        @Override
-        public void accept(SerialPortBytes serialPortBytes)
-        {
-            // TODO: 2019-07-29 选择串口解析器
-            BatteryVersion batteryVersion = versionParser.match(serialPortBytes);
-            if (batteryVersion != null)
-            {
-                BaseSerialDataParser serialDataParser = SerialPortParserProvider.match(batteryVersion);
-                if (serialDataParser != null)
-                {
-                    BatteryInfo batteryInfo = serialDataParser.parse(serialPortBytes);
-                    if (batteryInfo != null)
-                    {
-                        batteryInfo.setControllerAddressId(serialPortBytes.getControllerAddressId());
-                        watchConsumer.accept(batteryInfo);
-                    }
-                }
-            } else
-            {
-                BatteryInfo batteryInfo = batteryInfoMap.get(serialPortBytes.getControllerAddressId());
-                if (batteryInfo != null)
-                {
-                    batteryInfo.reset();
-                }
-                watchConsumer.accept(batteryInfo);
-            }
-        }
-    };
-    private final Consumer<Long> delayedConsumer = new Consumer<Long>()
-    {
-        @Override
-        public void accept(Long l)
-        {
-            if (onEventConsumer != null)
-            {
-                onEventConsumer.onOutEvent("延迟剩余" + (l / 1000) + "s...");
-            }
-        }
-    };
-
-    private Disposable loopDeviceDataDisposable;
-
-    private final List<EventStrategyController> readControllerList = new ArrayList<>();
+    private final StrategyDispatcher<TaskStrategy> strategyDispatcher = new StrategyDispatcher<>();
+    private final TaskFormater taskFormater;
 
     private final VersionParser versionParser = new VersionParser();
 
-    public void init(@NonNull SerialPortDevice serialPortDevice)
+    private final Map<Integer, BatteryInfo> batteryInfoMap = new HashMap<>();
+
+    private volatile boolean isPolling;
+
+    private WatchAction watchAction;
+
+    private final TaskAction taskAction = new TaskAction()
     {
-        stop();
-
-        this.serialPortDevice = serialPortDevice;
-
-        readControllerList.addAll(SerialPortControllerProvider.loadController(serialPortDevice));
-        for (EventStrategyController eventStrategyController : readControllerList)
+        @Override
+        public void onTaskExecuteBefore(int taskAddress)
         {
-            eventStrategyController.registerIndicatorConsumer(idIndicatorConsumer);
-            eventStrategyController.registerWriteEventConsumer(writeConsumer);
-            eventStrategyController.registerReadEventConsumer(readConsumer);
-            eventStrategyController.registerSerialPortBytesConsumer(serialPortBytesConsumer);
-            eventStrategyController.registerCountdownConsumer(delayedConsumer);
-        }
-
-        notifyInitData();
-
-        LogTracer.outI(TAG, "串口Read控制器初始化完成，数量:" + readControllerList.size());
-    }
-
-    /**
-     * 通知初始化数据
-     */
-    private void notifyInitData()
-    {
-        BatteryInfo batteryInfo;
-        for (EventStrategyController eventStrategyController : readControllerList)
-        {
-            batteryInfo = new BatteryInfo();
-            batteryInfo.setControllerAddressId(eventStrategyController.getControllerAddressId());
-            batteryInfoMap.put(eventStrategyController.getControllerAddressId(), batteryInfo);
-            watchConsumer.accept(batteryInfo);
-        }
-    }
-
-    public void start()
-    {
-        if (serialPortDevice == null)
-        {
-            return;
-        }
-
-        if (loopDeviceDataDisposable != null)
-        {
-            if (!loopDeviceDataDisposable.isDisposed())
+            if (watchAction != null)
             {
-                loopDeviceDataDisposable.dispose();
+                BatteryInfo batteryInfo = batteryInfoMap.get(taskAddress);
+                if (batteryInfo != null)
+                {
+                    batteryInfo.setStatus(BatteryInfo.LOADING);
+                    watchAction.onWatch(batteryInfo);
+                }
             }
         }
 
-        Observable.fromIterable(readControllerList)
-                .subscribeOn(Schedulers.single())
-                .repeat()
-                .filter(eventStrategyController -> eventStrategyController != null)
-                .subscribe(new IgnoreErrorObserver<EventStrategyController>()
+        @Override
+        public void onTaskExecuteAfter(int taskAddress)
+        {
+            if (watchAction != null && taskFormater != null)
+            {
+                SerialPortData serialPortData = taskFormater.getSerialPortData();
+                if (serialPortData != null)
                 {
-                    @Override
-                    protected void on_Next(EventStrategyController eventStrategyController)
+                    BatteryInfo batteryInfo = null;
+                    BatteryVersion batteryVersion = versionParser.match(serialPortData);
+                    if (batteryVersion != null)
                     {
-                        if (onEventConsumer != null)
+                        BaseSerialDataParser serialDataParser = SerialPortParserProvider.match(batteryVersion);
+                        if (serialDataParser != null)
                         {
-                            onEventConsumer.onOutEvent("clear");
+                            batteryInfo = serialDataParser.parse(serialPortData);
+                            if (batteryInfo != null)
+                            {
+                                batteryInfo.setControllerAddress(taskAddress);
+                            }
+                        }
+                    }
+
+                    if (batteryInfo == null)
+                    {
+                        batteryInfo = batteryInfoMap.get(taskAddress);
+                        if (batteryInfo != null)
+                        {
+                            batteryInfo.reset();
+                        }
+                    }
+
+                    if (watchAction != null)
+                    {
+                        watchAction.onWatch(batteryInfo);
+                    }
+                }
+            }
+        }
+    };
+
+    public SerialPortDispatcher(TaskFormater taskFormater)
+    {
+        this.taskFormater = taskFormater;
+    }
+
+    void init(SerialPortDevice serialPortDevice)
+    {
+        /**
+         * 策略结构：
+         * groupIndex1-策略1(groupIndex1)-策略2(groupIndex1)-策略3(groupIndex1)-策略4(groupIndex1)
+         * -groupIndex2-策略1(groupIndex2)-策略2(groupIndex2)-策略3(groupIndex2)-策略4(groupIndex2)-.......
+         * ...........
+         * .........
+         * .......
+         */
+        if (serialPortDevice != null)
+        {
+            this.serialPortDevice = serialPortDevice;
+
+            if (ControlPanelStrategyTable.ADDRS != null)
+            {
+                TaskController taskController;
+                TaskStrategy taskStrategy;
+                int groupIndex = 0;
+
+                for (int index = 0, taskId = 1, size = ControlPanelStrategyTable.ADDRS.size(); index < size; index++, taskId++)
+                {
+                    // TODO: 2019-08-17 添加485转发策略
+                    taskController = new _485Controller(serialPortDevice);
+                    taskController.setTaskGroupId(groupIndex);
+                    taskController.setTaskAddress(ControlPanelStrategyTable.ADDRS.get(index)[ControlPanelStrategyTable.ADDRESS_INDEX]);
+                    taskController.setStrategyAction(taskFormater);
+                    taskController.setTaskAction(taskAction);
+
+                    taskStrategy = new _485Strategy(ControlPanelStrategyTable.ID._485, ControlPanelStrategyTable.ADDRS.get(index));
+                    taskStrategy.setTaskController(taskController);
+                    strategyDispatcher.add(taskStrategy);
+
+                    BatteryInfo batteryInfo = new BatteryInfo();
+                    batteryInfo.setControllerAddress(taskController.getTaskAddress());
+                    fullData(batteryInfo);
+
+                    if (BatteryStrategyTable.CMDS != null)
+                    {
+                        taskController = new BatteryController(serialPortDevice);
+                        taskController.setTaskGroupId(groupIndex);
+                        taskController.setTaskAddress(ControlPanelStrategyTable.ADDRS.get(index)[ControlPanelStrategyTable.ADDRESS_INDEX]);
+                        taskController.setStrategyAction(taskFormater);
+                        taskController.setTaskAction(taskAction);
+
+                        for (Map.Entry<Integer, byte[]> entry : BatteryStrategyTable.CMDS.entrySet())
+                        {
+                            // TODO: 2019-08-17 添加电池策略
+                            taskStrategy = new BatteryStrategy(entry.getKey(), entry.getValue());
+                            taskStrategy.setTaskController(taskController);
+                            strategyDispatcher.add(taskStrategy);
                         }
 
-                        eventStrategyController.execute();
+                        // TODO: 2019-08-17 标记为最后一条策略
+                        taskStrategy.setLast(true);
+
+                        groupIndex = strategyDispatcher.size();
                     }
-
-                    @Override
-                    public void onSubscribe(Disposable d)
-                    {
-                        loopDeviceDataDisposable = d;
-                    }
-                });
+                }
+            }
+        }
     }
 
-    public void stop()
+    void fullData(BatteryInfo batteryInfo)
     {
-        SerialPortParserProvider.finish();
+        batteryInfoMap.put(batteryInfo.getControllerAddress(), batteryInfo);
+
+        if (watchAction != null)
+        {
+            watchAction.onWatch(batteryInfo);
+        }
     }
 
-    public void setOnEventConsumer(OnEventConsumer onEventConsumer)
+    void start()
     {
-        this.onEventConsumer = onEventConsumer;
+        isPolling = true;
+
+        new Thread(() -> {
+            while (isPolling)
+            {
+                CmdStrategy cmdStrategy = poll();
+                if (cmdStrategy == null)
+                {
+                    strategyDispatcher.next();
+                    // TODO: 2019-08-15 继续执行任务
+                } else
+                {
+                    // TODO: 2019-08-15 执行cmd任务
+                    strategyDispatcher.next(cmdStrategy);
+                }
+            }
+        }).start();
     }
 
-    public void setOnWatchResultConsumer(OnWatchResultConsumer onWatchResultConsumer)
+    void stop()
     {
-        this.onWatchResultConsumer = onWatchResultConsumer;
+        isPolling = false;
+        if (serialPortDevice != null)
+        {
+            serialPortDevice.closeSerial();
+        }
+    }
+
+    void setWatchAction(WatchAction watchAction)
+    {
+        this.watchAction = watchAction;
     }
 }

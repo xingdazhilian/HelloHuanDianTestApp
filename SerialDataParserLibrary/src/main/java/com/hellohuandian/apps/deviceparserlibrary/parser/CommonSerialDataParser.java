@@ -1,7 +1,7 @@
 package com.hellohuandian.apps.deviceparserlibrary.parser;
 
-import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
-import com.hellohuandian.apps.datalibrary.models.readSerialData.SerialPortBytes;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.SerialPortData;
 import com.hellohuandian.apps.deviceparserlibrary.base.BaseSerialDataParser;
 
 /**
@@ -77,7 +77,7 @@ public class CommonSerialDataParser extends BaseSerialDataParser
     }
 
     @Override
-    public BatteryInfo parse(SerialPortBytes serialPortBytes)
+    public BatteryInfo parse(SerialPortData serialPortBytes)
     {
         batteryInfo.setBatteryTemperature(parseBatteryTemperature(serialPortBytes.getBatteryTemperature()));
         batteryInfo.setBatteryTotalVoltage(parseBatteryTotalVoltage(serialPortBytes.getBatteryTotalVoltage()));

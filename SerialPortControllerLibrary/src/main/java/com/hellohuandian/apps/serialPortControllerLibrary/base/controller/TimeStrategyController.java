@@ -1,6 +1,6 @@
 package com.hellohuandian.apps.serialPortControllerLibrary.base.controller;
 
-import com.android.SerialPort.SerialPortDevice;
+import android_serialport_api.SerialPortDevice;
 import com.hellohuandian.apps.serialPortControllerLibrary.base.controller.strategy.TaskStrategy;
 
 import androidx.core.util.Consumer;
@@ -12,7 +12,7 @@ import androidx.core.util.Consumer;
  */
 public abstract class TimeStrategyController<T extends TaskStrategy> extends ExecuteController<T>
 {
-    private static long delayedTime = 1000 * 10;
+    private static long delayedTime = 1000 * 3;
 
     private Consumer<Long> countdownConsumer;
 

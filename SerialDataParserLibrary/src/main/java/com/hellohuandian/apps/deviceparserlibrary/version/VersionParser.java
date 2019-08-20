@@ -2,7 +2,7 @@ package com.hellohuandian.apps.deviceparserlibrary.version;
 
 import android.text.TextUtils;
 
-import com.hellohuandian.apps.datalibrary.models.readSerialData.BaseSerialPortBytes;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.IdCodeSerialPortData;
 
 /**
  * Author:      Lee Yeung
@@ -19,7 +19,7 @@ public final class VersionParser
     private BatteryVersion batteryVersion = new BatteryVersion();
     private final StringBuilder stringBuilder = new StringBuilder();
 
-    public BatteryVersion match(BaseSerialPortBytes baseSerialPortBytes)
+    public BatteryVersion match(IdCodeSerialPortData baseSerialPortBytes)
     {
         if (baseSerialPortBytes != null)
         {

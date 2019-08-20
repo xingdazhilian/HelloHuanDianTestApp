@@ -1,2 +1,2 @@
-include ':app', ':TestLibrary', ':DataLibrary', ':SerialDataParserLibrary', ':UtilLibrary', ':SerialPortControllerLibrary', ':SerialPortUtilLibrary', ':ConfigStrategyLibrary', ':BaseLibrary'//, ':testApp'
+include ':app', ':TestLibrary', ':SerialPortDataLibrary', ':SerialDataParserLibrary', ':UtilLibrary', ':SerialPortUtilLibrary', ':ConfigLibrary', ':BaseLibrary', ':ControllerLibrary'//, ':testApp'
 include ':SerialPort'

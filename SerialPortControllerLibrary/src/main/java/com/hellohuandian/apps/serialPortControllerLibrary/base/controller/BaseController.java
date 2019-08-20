@@ -1,6 +1,6 @@
 package com.hellohuandian.apps.serialPortControllerLibrary.base.controller;
 
-import com.android.SerialPort.SerialPortDevice;
+import android_serialport_api.SerialPortDevice;
 
 import java.io.IOException;
 

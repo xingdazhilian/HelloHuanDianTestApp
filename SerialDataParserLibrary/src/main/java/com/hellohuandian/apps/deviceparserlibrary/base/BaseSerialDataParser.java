@@ -1,7 +1,7 @@
 package com.hellohuandian.apps.deviceparserlibrary.base;
 
-import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
-import com.hellohuandian.apps.datalibrary.models.readSerialData.SerialPortBytes;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.SerialPortData;
 import com.hellohuandian.apps.deviceparserlibrary.version.BatteryVersion;
 
 /**
@@ -35,5 +35,5 @@ public abstract class BaseSerialDataParser
         return batteryVersion;
     }
 
-    public abstract BatteryInfo parse(SerialPortBytes serialPortBytes);
+    public abstract BatteryInfo parse(SerialPortData serialPortBytes);
 }

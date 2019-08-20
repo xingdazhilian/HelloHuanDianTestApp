@@ -1,7 +1,5 @@
 package android_serialport_api;
 
-import com.android.SerialPort.SerialPortConfig;
-
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -13,7 +11,7 @@ import java.io.IOException;
  * Create Date: 2018/11/5
  * Description: 串口设备
  */
-public class SerialPort
+class SerialPort
 {
     static
     {

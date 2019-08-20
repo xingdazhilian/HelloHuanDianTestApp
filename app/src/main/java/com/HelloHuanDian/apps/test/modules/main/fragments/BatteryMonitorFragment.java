@@ -3,11 +3,14 @@ package com.HelloHuanDian.apps.test.modules.main.fragments;
 import android.os.Bundle;
 
 import com.HelloHuanDian.apps.test.R;
-import com.HelloHuanDian.apps.test.modules.main.fragments.adapter.BatteryInfoAdapter;
 import com.HelloHuanDian.apps.test.base.fragments.AppBaseFragment;
+import com.HelloHuanDian.apps.test.modules.main.fragments.adapter.BatteryInfoAdapter;
 import com.HelloHuanDian.apps.test.modules.main.viewmodel.BatteryViewModel;
+import com.HelloHuanDian.apps.test.service.FormatBatteryInfo;
+import com.hellohuandian.apps.testlibrary.core.CmdSerialPortDispatcher;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +28,17 @@ public class BatteryMonitorFragment extends AppBaseFragment
 
     private BatteryInfoAdapter batteryInfoAdapter;
 
+    private Consumer<FormatBatteryInfo> formatBatteryInfoConsumer = new Consumer<FormatBatteryInfo>()
+    {
+        @Override
+        public void accept(FormatBatteryInfo formatBatteryInfo)
+        {
+
+            //推杆操作
+            CmdSerialPortDispatcher.getInstance().dispatch(CmdSerialPortDispatcher.CmdStrategyId.PUSH_ROD, formatBatteryInfo.getControllerAddress());
+        }
+    };
+
     @Override
     protected int getLayoutID()
     {
@@ -37,6 +51,8 @@ public class BatteryMonitorFragment extends AppBaseFragment
         super.onActivityCreated(savedInstanceState);
 
         batteryInfoAdapter = new BatteryInfoAdapter(getContext());
+        batteryInfoAdapter.setFormatBatteryInfoConsumer(formatBatteryInfoConsumer);
+
         rvBatteryInfos.setLayoutManager(new GridLayoutManager(getContext(), 3));
         rvBatteryInfos.setAdapter(batteryInfoAdapter);
 
@@ -45,7 +61,7 @@ public class BatteryMonitorFragment extends AppBaseFragment
         if (batteryViewModel.batteryMonitorLiveData != null)
         {
             batteryViewModel.batteryMonitorLiveData.observe(this, batteryData -> {
-                System.out.println("控制板ID：" + batteryData.getBatteryData().getControllerAddressId());
+                System.out.println("控制板ID：" + batteryData.getBatteryData().getControllerAddress());
                 System.out.println("当前温度：" + batteryData.getBatteryData().getBatteryTemperature() + "°C");
                 System.out.println("当前电压：" + batteryData.getBatteryData().getBatteryTotalVoltage() + "mV");
                 System.out.println("当前电流：" + batteryData.getBatteryData().getRealTimeCurrent() + "mA");

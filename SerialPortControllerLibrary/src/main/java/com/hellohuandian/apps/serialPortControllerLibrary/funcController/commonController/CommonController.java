@@ -2,11 +2,11 @@ package com.hellohuandian.apps.serialPortControllerLibrary.funcController.common
 
 import android.util.SparseArray;
 
-import com.android.SerialPort.SerialPortDevice;
+import android_serialport_api.SerialPortDevice;
 import com.hellohuandian.apps.configstrategylibrary.table.BatteryStrategy;
 import com.hellohuandian.apps.configstrategylibrary.table.ControlAddressTable;
 import com.hellohuandian.apps.configstrategylibrary.table.ControllerStrategy;
-import com.hellohuandian.apps.datalibrary.models.readSerialData.SerialPortBytes;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.data.SerialPortData;
 import com.hellohuandian.apps.serialPortControllerLibrary.base.controller.EventStrategyController;
 import com.hellohuandian.apps.serialportutillibrary.SerialPortLog;
 import com.hellohuandian.apps.utillibrary.StringFormatHelper;
@@ -23,7 +23,7 @@ public class CommonController extends EventStrategyController<CommonStrategy>
 
     private final String TAG = "串口请求";
 
-    private final SerialPortBytes commonSerialPortBytes = new SerialPortBytes();
+    private final SerialPortData commonSerialPortBytes = new SerialPortData();
 
     public CommonController(SerialPortDevice serialPortDevice, ControlAddressTable.Address address)
     {
@@ -75,7 +75,7 @@ public class CommonController extends EventStrategyController<CommonStrategy>
         switch (batteryStrategy.strategyId)
         {
             case ControllerStrategy.ID._485:
-                cmdWrite += ":激活485转发模式";
+                 cmdWrite += ":激活485转发模式";
                 break;
             case BatteryStrategy.ID.BATTERY_TEMPERATURE:
                 cmdWrite += "电池温度";

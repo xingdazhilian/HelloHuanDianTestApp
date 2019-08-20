@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.SparseArray;
 
-import com.hellohuandian.apps.datalibrary.models.BatteryData.BatteryInfo;
+import com.hellohuandian.apps.SerialPortDataLibrary.models.info.BatteryInfo;
 import com.hellohuandian.apps.testlibrary.TestService;
 
 import java.util.HashSet;
@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Author:      Lee Yeung
@@ -64,63 +65,31 @@ public class SerialPortWatchService extends TestService
             {
                 Observable.just(batteryData)
                         .map(batteryInfo -> {
-                            FormatBatteryInfo formatBatteryInfo = formatBatteryInfoSparseArray.get(batteryData.getControllerAddressId());
+                            FormatBatteryInfo formatBatteryInfo = formatBatteryInfoSparseArray.get(batteryData.getControllerAddress());
                             if (formatBatteryInfo == null)
                             {
                                 formatBatteryInfo = new FormatBatteryInfo();
-                                formatBatteryInfoSparseArray.put(batteryData.getControllerAddressId(), formatBatteryInfo);
+                                formatBatteryInfoSparseArray.put(batteryData.getControllerAddress(), formatBatteryInfo);
                             }
                             return formatBatteryInfo;
                         }).subscribe(formatBatteryInfo -> {
                     formatBatteryInfo.format(batteryData);
 
-                    if (isMainThread())
+                    mWatcherHandle.post(new Runnable()
                     {
-                        BatteryWatcherRegisters.onWatch(formatBatteryInfo);
-                    } else
-                    {
-                        mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(formatBatteryInfo));
-                    }
+                        @Override
+                        public void run()
+                        {
+                            BatteryWatcherRegisters.onWatch(formatBatteryInfo);
+                            postString("clear");
+                        }
+                    });
                 });
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
-        }
-    }
-
-    @Override
-    public void onIdIndicate(int id)
-    {
-        postString("电池号(" + id + ")\n" +
-                "=========================");
-    }
-
-    @Override
-    public void onReadEvent(String event)
-    {
-        if (isWatch)
-        {
-            postString(event);
-        }
-    }
-
-    @Override
-    public void onOutEvent(String event)
-    {
-        if (isWatch)
-        {
-            postString(event);
-        }
-    }
-
-    @Override
-    public void onWriteEvent(String event)
-    {
-        if (isWatch)
-        {
-            postString(event);
         }
     }
 
@@ -133,6 +102,18 @@ public class SerialPortWatchService extends TestService
         {
             mWatcherHandle.post(() -> BatteryWatcherRegisters.onWatch(str));
         }
+    }
+
+    @Override
+    public void onWrite(String data)
+    {
+        postString(data);
+    }
+
+    @Override
+    public void onRead(String data)
+    {
+        postString(data);
     }
 
     public static class BatteryWatcherRegisters
